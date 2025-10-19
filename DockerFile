@@ -1,0 +1,21 @@
+FROM node:14-slim
+
+RUN echo "Installing dependencies"
+# Update package lists and upgrade installed packages to reduce vulnerabilities
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "Installing yarn"
+RUN npm install -g yarn
+
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install
+
+COPY . .
+RUN yarn build
+
+EXPOSE 3000
+CMD ["yarn", "start"]
